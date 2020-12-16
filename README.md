@@ -145,12 +145,10 @@ En el caso de una respuesta exitosa (`200`) devuelve la [tienda](#shop).
 <summary>Ejemplo tienda sin envíos (/api/shops/12/)</summary>
 
 ```json
-[
-    {
-        "id": 12,
-        "name": "Zapatería Chilena"
-    }
-]
+{
+    "id": 12,
+    "name": "Zapatería Chilena"
+}
 ```
 
 </details>
