@@ -3228,6 +3228,7 @@ Las tiendas no pueden crearse ni modificarse desde la API.
 |`orders`|`Order[]`|[{...}, {...}, ...]|Listado de envíos asociados a la tienda. Los envíos vienen solo con los atributos más importantes|
 
 
+
 ## Order
 
 Objeto que representa un envío.
@@ -3246,10 +3247,10 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 |`courier`|:book: - `string`|tpc|Código del courier a cargo del envío|
 |`courier_name`|:book: - `string`|ThePackCo|Nombre descriptivo de courier a cargo del envío|
 |`reference_code`|:exclamation: - `string`|2310TIENDA|Código de referencia del envío|
-|`address_region`|:exclamation: - `string`|VS|Código [ISO3166-2](https://es.wikipedia.org/wiki/ISO_3166-2:CL) de la región de destino sin el prefijo `CL-`. No confundir con la sigla nacional|
-|`address_region_name`|:book: - `string`|Valparaíso|Nombre descriptivo de la región de destino|
-|`address_city`|:exclamation: - `string`|81|Código interno de la comuna de destino|
-|`address_city_name`|:book: - `string`|Viña Del Mar|Nombre descriptivo de la comuna de destino|
+|`address_region`|:exclamation: - `string`|VS|Código de la región de destino. [Detalles](#regiones-y-comunas)|
+|`address_region_name`|:book: - `string`|Valparaíso|Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)|
+|`address_city`|:exclamation: - `string`|81|Código interno de la comuna de destino. [Detalles](#regiones-y-comunas)|
+|`address_city_name`|:book: - `string`|Viña Del Mar|Nombre descriptivo de la comuna de destino. [Detalles](#regiones-y-comunas)|
 |`address_street`|:exclamation: - `string`|Compañía de Jesús 1131|Dirección de destino, con calle y número|
 |`address_flat`|:question: - `string`|Depto 301A|Número de departamento o casa (si fuera dentro de un condominio)|
 |`address_additional`|:question: - `string`|Portón de madera frente a camino de tierra|Referencias adicionales para la dirección de destino en caso de que fueran necesarias|
@@ -3261,6 +3262,36 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 |`events`|:book: - `OrderEvent`|[{...}, {...}, ...]|Lista de eventos asociados al envío|
 |`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
 |`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
+
+
+#### Regiones y comunas
+
+En ThePackCo usamos el código [ISO3166-2](https://es.wikipedia.org/wiki/ISO_3166-2:CL) sin el prefijo `CL-` para referirnos a cada region:
+
+|Código región|Nombre región|
+|-------------|-------------|
+|AP|Arica y Parinacota|
+|TA|Tarapacá|
+|AN|Antofagasta|
+|AT|Atacama|
+|CO|Coquimbo|
+|VS|Valparaíso|
+|RM|Metropolitana de Santiago|
+|LI|Libertador Gral. Bernardo O’Higgins|
+|ML|Maule|
+|NB|Ñuble|
+|BI|Biobío|
+|AR|Araucanía|
+|LR|Los Ríos|
+|LL|Los Lagos|
+|AI|Aysén del Gral. Carlos Ibáñez del Campo|
+|MA|Magallanes y de la Antártica Chilena|
+
+Cada región se divide en comunas, dando a un total de 346 en todo el país.
+
+En ThePackCo forzamos que los envíos tengan una región y comuna válidos. Al crear un envío, se debe entregar el código de la región y el nombre de la comuna (los códigos de comuna solo se utilizan de manera interna). Es necesario verificar que la comuna pertenezca a la región indicada, y además, tanto el código de la región como el nombre de la comuna deben estar escritos de la manera correcta.
+
+Para conocer los nombres de las comunas y la región a la que pertencen, puede consultar [este archivo](regions_and_cities.json) (formato JSON).
 
 
 
