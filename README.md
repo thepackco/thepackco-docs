@@ -14,6 +14,10 @@ Para autenticarse es necesario enviar el token de autenticación entregado por T
 
 `Authorization: Token tu_token_de_autenticacion`
 
+## Postman collection
+
+Para los usuarios de Postman, es posible [descargar un _collection_](TPC-API.postman_collection.json) listo para usar.
+
 ## Ejemplo en Python
 
 ```python3
