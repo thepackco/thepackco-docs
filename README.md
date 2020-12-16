@@ -3242,7 +3242,7 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 |`id`|:book: - `integer`|133|ID asociado al envío|
 |`shop`|:book: - `integer`|12|ID asociado a la tienda|
 |`public_id`|:book: - `string`|ND7AN34H9K|ID público de seguimiento del envío compuesto de 10 caracteres (letras mayúsculas y números)|
-|`status`|:book: - `string`|created|Código del estado del envío|
+|`status`|:book: - `string`|created|Código del estado del envío. [Detalles](#estados)|
 |`status_name`|:book: - `string`|Creado|Nombre descriptivo del estado del envío|
 |`courier`|:book: - `string`|tpc|Código del courier a cargo del envío|
 |`courier_name`|:book: - `string`|ThePackCo|Nombre descriptivo de courier a cargo del envío|
@@ -3263,6 +3263,18 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 |`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
 |`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
 
+
+#### Estados
+
+|Código estado|Descripción|
+|-------------|-----------|
+|`created`|El envío fue creado|
+|`received`|El envío fue retirado por ThePackCo desde las bodegas de la tienda (no aplica en tiendas que usan las bodegas de ThePackCo)|
+|`processed`|El envío ingresó al sistema de la empresa de courier que se encargará del despacho (puede ser ThePackCo mismo u otro courier en el caso de envíos a regiones)|
+|`delivered`|El envío fue entregado al cliente final|
+|`delegated`|El envío fue entregado a otro courier (distinto de ThePackCo) y ellos se están haciendo cargo del envío|
+|`deleted`|El envío fue eliminado por la tienda|
+|`canceled`|El envío fue cancelado por ThePackCo|
 
 #### Regiones y comunas
 
