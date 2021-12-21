@@ -3210,6 +3210,9 @@ eventos.
 Por ejemplo, el dueño de la tienda podrá configurar un webhook para ser notificado cuando ocurran cambios en el status
 de sus órdenes.
 
+Para que las notificaciones mediante webhook surtan efecto, es importante que la tienda remota tenga configurado en su
+sistema aquellas settings que requieran de webhook.
+
 <summary>Ejemplo de los settings de la tienda al tener webhook configurado</summary>
 
 ```json
