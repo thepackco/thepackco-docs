@@ -223,11 +223,12 @@ Modifica la información de una tienda.
 #### Endpoint
 
 `PATCH /api/shops/:shop_id/`
+
 `PUT /api/shops/:shop_id/`
 
 #### Parámetros
 
-Recibe la información del envío en el _request body_ (formato JSON). En el recurso [shop](#shop) se detallan los
+Recibe la información de la tienda en el _request body_ (formato JSON). En el recurso [shop](#shop) se detallan los
 atributos que se pueden entregar al momento de editar la tienda.
 
 <details>
@@ -282,13 +283,13 @@ Si la información proporcionada es correcta, retorna código de éxito (`200`) 
 
 ```json
 {
-  "id": 14,
-  "name": "Test shop 4",
+  "id": 12,
+  "name": "Zapatería chilena",
   "settings": {
     "webhooks": {
       "order_updated": {
         "enabled": false,
-        "endpoint": "http://localhost:3000/webhooks/order_update"
+        "endpoint": "https://zapateriachilena.cl/tpc-webhooks/order_updated"
       }
     }
   },
@@ -3304,7 +3305,7 @@ Objeto que representa una tienda a la cual están asociados los envíos.
 
 Las tiendas no pueden crearse desde la API, deben ser creadas directamente por un administrador de ThePackCo.
 
-Al editar una tienda, solo es posible modificar aquellos con el símbolo :question:. Los atributos que tienen 
+Al editar una tienda, solo es posible modificar aquellos atributos con el símbolo :question:, los que tienen 
 el símbolo :book: son atributos de solo lectura.
 
 |Atributo|Tipo|Ejemplo|Descripción|
@@ -3317,13 +3318,11 @@ el símbolo :book: son atributos de solo lectura.
 
 ####  Shop settings
 
-En este objeto podemos configurar lo siguiente:
-
-**Webhooks**
+En el atributo `settings` podemos configurar los webhooks.
 
 Los webhooks permiten que servicios externos (manejados por la propia tienda) sean notificados cuando ocurren ciertos
-eventos. Por ejemplo, el dueño de la tienda podrá configurar un webhook para ser notificado cuando ocurran cambios en el status
-de sus órdenes.
+eventos. Por ejemplo, el dueño de la tienda podrá configurar un webhook para ser notificado cuando ocurran cambios en el estado
+de sus envíos.
 
 Cada webhook entrega distinta información y se llama en distintas circunstancias. A continuación el listado de webhooks disponibles:
 
@@ -3331,7 +3330,7 @@ Cada webhook entrega distinta información y se llama en distintas circunstancia
 |------|----------|-----------|---------------|
 |`order_updated`|POST|En formato JSON, el [envío](#order) con todos sus atributos|Cada vez que hay un nuevo [evento](#orderevent) asociado a un envío, esto incluye el evento _created_|
 
-En cada llama de estos webhooks se envía también el header `HTTP_WEBHOOK_TOKEN` con el token de la tienda, esto 
+En cada llamada de estos webhooks se envía también el header `HTTP_WEBHOOK_TOKEN` con el token de la tienda, esto 
 debería usarse para validar que la _requests_ vienen realmente de ThePackCo y no de un usuario malicioso.
 
 Para cada webhook, el usuario puede definir si está activo o inactivo, y de estar activo se debe definir una URL a la cual llamar.
@@ -3373,7 +3372,7 @@ Para cada webhook, el usuario puede definir si está activo o inactivo, y de est
 
 ####  Shop emails
 
-En este objeto podemos definir cuándo el usuario final (campo `customer_email` del envío) recibirá notificaciones por correo.
+En el atributo `mail_preferences_data` podemos definir cuándo el usuario final (campo `customer_email` del envío) recibirá notificaciones por correo. A continuación está el listado de correos que se pueden configurar:
 
 |Nombre notificación|Tipo de dato|Descripción|
 |-------------------|------------|-----------|
@@ -3385,15 +3384,15 @@ En este objeto podemos definir cuándo el usuario final (campo `customer_email` 
 |`send_at_delegated`|`boolean`|Enviar un correo cuando el envío se delega a otra empresa de courier. El correo incluye el nombre del otro courier junto con un número de seguimiento|
 
 <details>
-<summary>Ejemplo donde se modifica la configuración de correos</summary>
+<summary>Ejemplo donde se envían todos los correos</summary>
 
 ```json
 {
   "mail_preferences_data": {
-    "send_at_created": false,
-    "send_at_received": false,
+    "send_at_created": true,
+    "send_at_received": true,
     "send_at_dispatched": true,
-    "send_at_delivered": false,
+    "send_at_delivered": true,
     "send_at_delayed": true,
     "send_at_delegated": true
   }
