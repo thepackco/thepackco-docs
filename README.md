@@ -214,6 +214,85 @@ En el caso de una respuesta exitosa (`200`) devuelve la [tienda](#shop).
 
 </details>
 
+## Editar tienda
+
+Edita la información de una tienda. Más precisamente, la información de los webhooks y los correos.
+
+#### Endpoint
+
+`(PATCH/PUT) /api/shops/:shop_id/`
+
+#### Parámetros
+
+No recibe.
+
+#### Status codes
+
+- `200`: edita las configuraciones y retorna la tienda solicitida.
+- `401`: el token de autenticación no es válido.
+- `403`: el token de autenticación no tiene permisos para consultar este recurso.
+- `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso.
+
+#### Respuestas
+
+En el caso de una respuesta exitosa (`200`) edita y devuelve la [tienda](#shop).
+
+<details>
+<summary>Ejemplo modificación con Postman</summary>
+
+En este caso la petición se realiza para cambiar las configuraciones de correo.
+
+```http request
+PUT /api/shops/10/?='Authorization': Token 9371f6b8e9331e47b71f9646951b854680c288d9
+```
+
+Body
+
+```json
+{
+    "id": 10,
+    "name": "TyumenShop",
+    "mail_preferences_data": {
+        "send_at_created": false,
+        "send_at_delayed": false,
+        "send_at_received": true,
+        "send_at_delegated": true,
+        "send_at_delivered": true,
+        "send_at_dispatched": true
+    }
+}
+```
+
+Respuesta
+
+```json
+{
+    "id": 10,
+    "name": "TyumenShop",
+    "settings": {
+        "webhooks": {
+            "order_updated": {
+                "enabled": true,
+                "endpoint": "base_url/webhooks/order_update/"
+            }
+        }
+    },
+    "webhook_token": "1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8",
+    "mail_preferences_data": {
+        "send_at_created": false,
+        "send_at_delayed": false,
+        "send_at_received": true,
+        "send_at_delegated": true,
+        "send_at_delivered": true,
+        "send_at_dispatched": true
+    }
+}
+```
+
+
+
+</details>
+
 ## Obtener tarifas
 
 Devuelve los precios de despacho (en valor bruto) para cada comuna.
@@ -3202,7 +3281,23 @@ atributos.
 
 </details>
 
-## Webhooks
+____
+
+## Shop
+
+Objeto que representa una tienda a la cual están asociados los envíos.
+
+Las tiendas no pueden crearse ni modificarse desde la API.
+
+| Atributo | Tipo      |Ejemplo| Descripción                                                                                       |
+|----------|-----------|-------|---------------------------------------------------------------------------------------------------|
+| `id`     | `integer` |12| ID asociado a la tienda. Es necesario para poder crear envíos                                     |
+| `name`   | `string`  |Zapatería Chilena| Nombre de la tienda que se muestra en la plataforma de clientes                                   |
+| `settings` | `json`  |{...}| Json que contiene la información de la configuración de la tienda en The Pack Co. Por ejemplo, Si un usuario desea recibir notificaciones cuando una orden allá cambiado de status, dicha información aparecerá en este campo.   |
+| `webhook_token` | `string`  |1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8| Token utilizado para autenticar a la tienda que desea recibir los cambios en los status de sus ordenes.   |
+| `mail_preferences_data` | `json`  |{...}| Configuración de mensajería del usuario.   |
+
+####  Webhooks
 
 Los webhooks no son más que urls que permiten que los servicios externos sean notificados cuando ocurren ciertos
 eventos.
@@ -3233,22 +3328,7 @@ Por otro lado, el usuario podrá configurar sus propios urls para sus propios si
 The Pack Co podrá proporcionar su propio endpoint para enviar los cambios a su tienda remota. En el ejemplo anterior la
 tienda remota es shopify.
 
-____
 
-## Shop
-
-Objeto que representa una tienda a la cual están asociados los envíos.
-
-Las tiendas no pueden crearse ni modificarse desde la API.
-
-| Atributo | Tipo      |Ejemplo| Descripción                                                                                       |
-|----------|-----------|-------|---------------------------------------------------------------------------------------------------|
-| `id`     | `integer` |12| ID asociado a la tienda. Es necesario para poder crear envíos                                     |
-| `name`   | `string`  |Zapatería Chilena| Nombre de la tienda que se muestra en la plataforma de clientes                                   |
-| `owners` | `User`  |ThePackCo| Dueño asociado a la tienda.    |
-| `settings` | `json`  |{...}| Json que contiene la información de la configuración de la tienda en The Pack Co. Por ejemplo, Si un usuario desea recibir notificaciones cuando una orden allá cambiado de status, dicha información aparecerá en este campo.   |
-| `webhooks token` | `string`  |1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8| Token utilizado para autenticar a la tienda que desea recibir los cambios en los status de sus ordenes.   |
-| `mail preferences data` | `json`  |{...}| Configuración de mensajería del usuario.   |
 
 ## Order
 
@@ -3269,7 +3349,6 @@ solo lectura y por lo tanto solo pueden ser leídos al obtener la información d
 |`status_name`|:book: - `string`|Creado|Nombre descriptivo del estado del envío|
 |`courier`|:book: - `string`|tpc|Código del courier a cargo del envío|
 |`courier_name`|:book: - `string`|ThePackCo|Nombre descriptivo de courier a cargo del envío|
-|`courier_data`|:book: - `json`|{...}|Información del courier a cargo del envío|
 |`reference_code`|:exclamation: - `string`|2310TIENDA|Código de referencia del envío|
 |`address_region`|:exclamation: - `string`|VS|Código de la región de destino. [Detalles](#regiones-y-comunas)|
 |`address_region_name`|:book: - `string`|Valparaíso|Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)|
