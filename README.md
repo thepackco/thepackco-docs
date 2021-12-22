@@ -3433,9 +3433,10 @@ solo lectura y por lo tanto solo pueden ser leídos al obtener la información d
 |`customer_name`|:question: - `string`|Juan Nieves|Nombre del cliente que va a recibir el producto|
 |`customer_phone`|:question: - `string`|56944443333|Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete|
 |`product_description`|:question: - `string`|Botines negros talla XS|Descripción del producto|
+|`products`|:question: - `Product[]`|[{...}, {...}, ...]|Lista detallada de productos|
 |`packages`|:question: - `integer`|4|Cantidad de bultos del producto|
 |`additional_data`|:question: - `string`|Compra realizada a través de instagram usuario juan.nieves|Información adicional al envío que pudiera querer guardar la tienda|
-|`events`|:book: - `OrderEvent`|[{...}, {...}, ...]|Lista de eventos asociados al envío|
+|`events`|:book: - `OrderEvent[]`|[{...}, {...}, ...]|Lista de eventos asociados al envío|
 |`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
 |`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
 
@@ -3497,3 +3498,18 @@ Los OrderEvent no pueden crearse ni modificarse por medio de la API.
 |`description`|`string`|Envío creado|Nombre descriptivo del evento|
 |`datetime`|`string`|2020-11-27T22:42:32.586057Z|Hora en que ocurrió el evento, en formato ISO8601 (`Z` = GMT)|
 |`additional_data`|`JSON`|`{"eta": "14:13"}`|Información adicional del evento. Los atributos presentes en este objeto van a depender del tipo de evento|
+
+## Product
+
+Objeto que representa un producto asociado a un envío.
+
+Los productos no pueden crearse ni modificarse por medio de la API.
+
+|Atributo|Tipo|Ejemplo|Descripción|
+|--------|----|-------|-----------|
+|`name`|`string`|Zapatilla Chester|Nombre del producto|
+|`variant`|`string`|Negro / 38|Variante del producto|
+|`sku`|`string`|2251000072038|Código SKU asociado al producto|
+|`ean`|`string`|6563727900783|Código EAN-13 asociado al producto|
+|`quanity`|`integer`|1|Cantidad|
+|`grams`|`integer`|900|Peso unitario del producto|
