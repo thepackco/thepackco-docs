@@ -39,6 +39,7 @@ if r.status_code == 200:
 - [Autenticación](#autenticación)
 - [Obtener tiendas](#obtener-tiendas)
 - [Obtener tienda y envíos](#obtener-tienda-y-envíos)
+- [Editar tienda](#editar-tienda)
 - [Crear envío](#crear-envío)
 - [Obtener envío](#obtener-envío)
 
@@ -242,11 +243,39 @@ En el caso de una respuesta exitosa (`200`) edita y devuelve la [tienda](#shop).
 
 En este caso la petición se realiza para cambiar las configuraciones de correo.
 
+_Settings originales_
+
+```json
+{
+    "id": 10,
+    "name": "TyumenShop",
+    "settings": {
+        "webhooks": {
+            "order_updated": {
+                "enabled": true,
+                "endpoint": "base_url/webhooks/order_update/"
+            }
+        }
+    },
+    "webhook_token": "1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8",
+    "mail_preferences_data": {
+        "send_at_created": true,
+        "send_at_delayed": true,
+        "send_at_received": true,
+        "send_at_delegated": true,
+        "send_at_delivered": true,
+        "send_at_dispatched": true
+    }
+}
+```
+
+_Petición_
+
 ```http request
 PUT /api/shops/10/?='Authorization': Token 9371f6b8e9331e47b71f9646951b854680c288d9
 ```
 
-Body
+_Body_
 
 ```json
 {
@@ -262,7 +291,7 @@ Body
 }
 ```
 
-Respuesta
+_Respuesta_
 
 ```json
 {
