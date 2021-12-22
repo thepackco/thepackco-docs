@@ -250,7 +250,6 @@ Body
 
 ```json
 {
-    "id": 10,
     "name": "TyumenShop",
     "mail_preferences_data": {
         "send_at_created": false,
