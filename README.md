@@ -49,6 +49,7 @@ if r.status_code == 200:
 - [`Shop`](#shop)
 - [`Order`](#order)
 - [`OrderEvent`](#orderevent)
+- [`Product`](#product)
 
 ____
 
@@ -3433,10 +3434,10 @@ solo lectura y por lo tanto solo pueden ser leídos al obtener la información d
 |`customer_name`|:question: - `string`|Juan Nieves|Nombre del cliente que va a recibir el producto|
 |`customer_phone`|:question: - `string`|56944443333|Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete|
 |`product_description`|:question: - `string`|Botines negros talla XS|Descripción del producto|
-|`products`|:question: - `Product[]`|[{...}, {...}, ...]|Lista detallada de productos|
+|`products`|:question: - `Product[]`|[{...}, {...}, ...]|Lista de [productos](#product) asociados al envío|
 |`packages`|:question: - `integer`|4|Cantidad de bultos del producto|
 |`additional_data`|:question: - `string`|Compra realizada a través de instagram usuario juan.nieves|Información adicional al envío que pudiera querer guardar la tienda|
-|`events`|:book: - `OrderEvent[]`|[{...}, {...}, ...]|Lista de eventos asociados al envío|
+|`events`|:book: - `OrderEvent[]`|[{...}, {...}, ...]|Lista de [eventos](#orderevent) asociados al envío|
 |`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
 |`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
 
