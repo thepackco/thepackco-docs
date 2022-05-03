@@ -42,12 +42,14 @@ if r.status_code == 200:
 - [Editar tienda](#editar-tienda)
 - [Crear envío](#crear-envío)
 - [Obtener envío](#obtener-envío)
+- [Obtener tarifas](#obtener-tarifas)
 
 ## Recursos adicionales
 
 - [`Shop`](#shop)
 - [`Order`](#order)
 - [`OrderEvent`](#orderevent)
+- [`Product`](#product)
 
 ____
 
@@ -217,15 +219,54 @@ En el caso de una respuesta exitosa (`200`) devuelve la [tienda](#shop).
 
 ## Editar tienda
 
-Edita la información de una tienda. Más precisamente, la información de los webhooks y los correos.
+Modifica la información de una tienda.
 
 #### Endpoint
 
-`(PATCH/PUT) /api/shops/:shop_id/`
+`PATCH /api/shops/:shop_id/`
+
+`PUT /api/shops/:shop_id/`
 
 #### Parámetros
 
-No recibe.
+Recibe la información de la tienda en el _request body_ (formato JSON). En el recurso [shop](#shop) se detallan los
+atributos que se pueden entregar al momento de editar la tienda.
+
+<details>
+<summary>Ejemplo donde se modifica la configuración de correos</summary>
+
+```json
+{
+  "mail_preferences_data": {
+    "send_at_created": false,
+    "send_at_received": false,
+    "send_at_dispatched": true,
+    "send_at_delivered": false,
+    "send_at_delayed": true,
+    "send_at_delegated": true
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Ejemplo donde se modifican la configuración de los webhooks</summary>
+
+```json
+{
+  "settings": {
+    "webhooks": {
+      "order_updated": {
+         "enabled": true,
+         "endpoint": "http://yourdomain.com/tpc-webhooks/order_updated"
+      }
+    }
+  }
+}
+```
+
+</details>
 
 #### Status codes
 
@@ -236,88 +277,267 @@ No recibe.
 
 #### Respuestas
 
-En el caso de una respuesta exitosa (`200`) edita y devuelve la [tienda](#shop).
+Si la información proporcionada es correcta, retorna código de éxito (`200`) y devuelve la [tienda](#shop) actualizada:
 
 <details>
-<summary>Ejemplo modificación con Postman</summary>
-
-En este caso la petición se realiza para cambiar las configuraciones de correo.
-
-_Settings originales_
+<summary>Ejemplo respuesta exitosa</summary>
 
 ```json
 {
-    "id": 10,
-    "name": "TyumenShop",
-    "settings": {
-        "webhooks": {
-            "order_updated": {
-                "enabled": true,
-                "endpoint": "base_url/webhooks/order_update/"
-            }
-        }
+  "id": 12,
+  "name": "Zapatería chilena",
+  "settings": {
+    "webhooks": {
+      "order_updated": {
+        "enabled": false,
+        "endpoint": "https://zapateriachilena.cl/tpc-webhooks/order_updated"
+      }
+    }
+  },
+  "webhook_token": "gkTzCmT6J7IEwl2iAdSMvlLjOVoKU8iG",
+  "mail_preferences_data": {
+    "send_at_created": false,
+    "send_at_delayed": true,
+    "send_at_received": false,
+    "send_at_delegated": true,
+    "send_at_delivered": false,
+    "send_at_dispatched": true
+  }
+}
+```
+
+</details>
+
+
+## Crear envío
+
+Crea un envío en la tienda asociada.
+
+#### Endpoint
+
+`POST /api/shops/:shop_id/orders/`
+
+#### Parámetros
+
+Recibe la información del envío en el _request body_ (formato JSON). En el recurso [order](#order) se detallan los
+atributos que se pueden entregar al momento de crear el envío.
+
+<details>
+<summary>Ejemplo solo con atributos obligatorios</summary>
+
+```json
+{
+  "reference_code": "2310TIENDA",
+  "address_region": "RM",
+  "address_city": "Huechuraba",
+  "address_street": "Av. Recoleta 999"
+}
+```
+
+</details>
+
+<details>
+<summary>Ejemplo con atributos obligatorios y algunos opcionales</summary>
+
+```json
+{
+  "reference_code": "2310TIENDA",
+  "address_region": "RM",
+  "address_city": "Huechuraba",
+  "address_street": "Av. Recoleta 999",
+  "customer_name": "Juan Nieves",
+  "customer_email": "juan@thepackco.cl",
+  "custom_phone": "594444333",
+  "product_description": "Zapatos de cuero negro T42"
+}
+```
+
+</details>
+
+**IMPORTANTE**: cuando obtenemos la información de un envío, el atributo `address_city` contiene el código de la comuna.
+Cuando creamos un envío, el atributo `address_city` debe contener el nombre de la comuna.
+
+#### Status codes
+
+- `201`: se crea el envío y devuelve el envío creado.
+- `400`: no se crea el envío y devuelve los errores asociados.
+- `401`: el token de autenticación no es válido.
+- `403`: el token de autenticación no tiene permisos para realizar esta acción.
+- `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso.
+
+#### Respuestas
+
+Si la información proporcionada es correcta, retorna código de éxito (`201`) y devuelve el [envío](#order) creado:
+
+<details>
+<summary>Ejemplo respuesta exitosa</summary>
+
+```json
+{
+  "id": 159,
+  "events": [
+    {
+      "datetime": "2020-12-16T16:48:51.520265Z",
+      "name": "created",
+      "additional_data": {},
+      "description": "Envío creado"
+    }
+  ],
+  "address_city": "306",
+  "courier": "tpc",
+  "address_region_name": "Metropolitana de Santiago",
+  "address_city_name": "Huechuraba",
+  "courier_name": "ThePackCo",
+  "status_name": "Creado",
+  "public_id": "UNC5ZLIBE7",
+  "status": "created",
+  "reference_code": "2310TIENDA",
+  "product_description": "Zapatos de cuero negro T42",
+  "additional_data": "",
+  "address_region": "RM",
+  "address_street": "Av. Recoleta 999",
+  "address_flat": "",
+  "address_additional": "",
+  "customer_email": "juan@thepackco.cl",
+  "customer_name": "Juan Nieves",
+  "customer_phone": "",
+  "created_at": "2020-12-16T16:48:51.520265Z",
+  "updated_at": "2020-12-16T16:48:51.540774Z",
+  "shop": 12
+}
+```
+
+</details>
+
+Si la información proporcionada tiene errores, devuelve código de error (`400`) y un objeto de errores. En cada entrada
+del objeto de errores, la llave corresponde al nombre del campo que tiene el error y el valor corresponde a una lista de
+los errores asociados a ese campo.
+
+<details>
+<summary>Ejemplo en que faltan campos requeridos</summary>
+
+```json
+{
+  "address_city": [
+    "This field is required."
+  ],
+  "reference_code": [
+    "This field is required."
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary>Ejemplo en que no se entrega una comuna válida</summary>
+
+```json
+{
+  "address_city": [
+    "\"Chicureo\" is not a valid city"
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary>Ejemplo en que no se entrega una región válida (deben usarse los códigos de región)</summary>
+
+```json
+{
+  "address_region": [
+    "\"Metropolitana\" is not a valid choice."
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary>Ejemplo en que la comuna no está dentro de la región</summary>
+
+```json
+{
+  "non_field_errors": [
+    "Viña Del Mar do not belong to Metropolitana de Santiago region"
+  ]
+}
+```
+
+</details>
+
+## Obtener envío
+
+Devuelve la información de un envío asociado a una tienda.
+
+#### Endpoint
+
+`GET /api/shops/:shop_id/orders/:order_id/`
+
+#### Parámetros
+
+No recibe.
+
+#### Status codes
+
+- `200`: retorna el envío.
+- `401`: el token de autenticación no es válido.
+- `403`: el token de autenticación no tiene permisos para consultar este recurso.
+- `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso, o no
+  existe el envío con el `:order_id` entregado.
+
+#### Respuestas
+
+En el caso de una respuesta positiva (`200`) retorna el envío. Ver recurso [Order](#order) para conocer todos los
+atributos.
+
+<details>
+<summary>Ejemplo respuesta exitosa</summary>
+
+```json
+{
+  "id": 119,
+  "events": [
+    {
+      "datetime": "2020-11-13T03:44:51.220196Z",
+      "name": "received",
+      "additional_data": {
+        "triggered_by": "leonardo"
+      },
+      "description": "Envío retirado por The Pack Co"
     },
-    "webhook_token": "1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8",
-    "mail_preferences_data": {
-        "send_at_created": true,
-        "send_at_delayed": true,
-        "send_at_received": true,
-        "send_at_delegated": true,
-        "send_at_delivered": true,
-        "send_at_dispatched": true
+    {
+      "datetime": "2020-10-29T22:02:14.938584Z",
+      "name": "created",
+      "additional_data": {},
+      "description": "Envío creado"
     }
+  ],
+  "address_city": "330",
+  "courier": "tpc",
+  "address_region_name": "Metropolitana de Santiago",
+  "address_city_name": "Providencia",
+  "courier_name": "ThePackCo",
+  "status_name": "Retirado",
+  "public_id": "YY4NYG9C51",
+  "status": "received",
+  "reference_code": "109231203",
+  "product_description": "2x zapatos sport t41",
+  "additional_data": "",
+  "address_region": "RM",
+  "address_street": "Los Leones 9000",
+  "address_flat": "Depto 101",
+  "address_additional": "",
+  "customer_email": "diego@nieves.cl",
+  "customer_name": "Diego Nieves",
+  "customer_phone": "+56971234567",
+  "created_at": "2020-10-29T22:02:14.938584Z",
+  "updated_at": "2020-11-13T03:44:51.271263Z",
+  "shop": 12
 }
 ```
-
-_Petición_
-
-```http request
-PUT /api/shops/10/?='Authorization': Token 9371f6b8e9331e47b71f9646951b854680c288d9
-```
-
-_Body_
-
-```json
-{
-    "name": "TyumenShop",
-    "mail_preferences_data": {
-        "send_at_created": false,
-        "send_at_delayed": false,
-        "send_at_received": true,
-        "send_at_delegated": true,
-        "send_at_delivered": true,
-        "send_at_dispatched": true
-    }
-}
-```
-
-_Respuesta_
-
-```json
-{
-    "id": 10,
-    "name": "TyumenShop",
-    "settings": {
-        "webhooks": {
-            "order_updated": {
-                "enabled": true,
-                "endpoint": "base_url/webhooks/order_update/"
-            }
-        }
-    },
-    "webhook_token": "1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8",
-    "mail_preferences_data": {
-        "send_at_created": false,
-        "send_at_delayed": false,
-        "send_at_received": true,
-        "send_at_delegated": true,
-        "send_at_delivered": true,
-        "send_at_dispatched": true
-    }
-}
-```
-
-
 
 </details>
 
@@ -3077,289 +3297,110 @@ En el caso de una respuesta exitosa (`200`) devuelve las tarifas.
 
 </details>
 
-## Crear envío
-
-Crea un envío en la tienda asociada.
-
-#### Endpoint
-
-`POST /api/shops/:shop_id/orders/`
-
-#### Parámetros
-
-Recibe la información del envío en el _request body_ (formato JSON). En el recurso [order](#order) se detallan los
-atributos que se pueden entregar al momento de crear el envío.
-
-<details>
-<summary>Ejemplo solo con atributos obligatorios</summary>
-
-```json
-{
-  "reference_code": "2310TIENDA",
-  "address_region": "RM",
-  "address_city": "Huechuraba",
-  "address_street": "Av. Recoleta 999"
-}
-```
-
-</details>
-
-<details>
-<summary>Ejemplo con atributos obligatorios y algunos opcionales</summary>
-
-```json
-{
-  "reference_code": "2310TIENDA",
-  "address_region": "RM",
-  "address_city": "Huechuraba",
-  "address_street": "Av. Recoleta 999",
-  "customer_name": "Juan Nieves",
-  "customer_email": "juan@thepackco.cl",
-  "custom_phone": "594444333",
-  "product_description": "Zapatos de cuero negro T42"
-}
-```
-
-</details>
-
-**IMPORTANTE**: cuando obtenemos la información de un envío, el atributo `address_city` contiene el código de la comuna.
-Cuando creamos un envío, el atributo `address_city` debe contener el nombre de la comuna.
-
-#### Status codes
-
-- `201`: se crea el envío y devuelve el envío creado.
-- `400`: no se crea el envío y devuelve los errores asociados.
-- `401`: el token de autenticación no es válido.
-- `403`: el token de autenticación no tiene permisos para realizar esta acción.
-- `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso.
-
-#### Respuestas
-
-Si la información proporcionada es correcta, retorna código de éxito (`201`) y devuelve el [envío](#order) creado:
-
-<details>
-<summary>Ejemplo respuesta exitosa</summary>
-
-```json
-{
-  "id": 159,
-  "events": [
-    {
-      "datetime": "2020-12-16T16:48:51.520265Z",
-      "name": "created",
-      "additional_data": {},
-      "description": "Envío creado"
-    }
-  ],
-  "address_city": "306",
-  "courier": "tpc",
-  "address_region_name": "Metropolitana de Santiago",
-  "address_city_name": "Huechuraba",
-  "courier_name": "ThePackCo",
-  "status_name": "Creado",
-  "public_id": "UNC5ZLIBE7",
-  "status": "created",
-  "reference_code": "2310TIENDA",
-  "product_description": "Zapatos de cuero negro T42",
-  "additional_data": "",
-  "address_region": "RM",
-  "address_street": "Av. Recoleta 999",
-  "address_flat": "",
-  "address_additional": "",
-  "customer_email": "juan@thepackco.cl",
-  "customer_name": "Juan Nieves",
-  "customer_phone": "",
-  "created_at": "2020-12-16T16:48:51.520265Z",
-  "updated_at": "2020-12-16T16:48:51.540774Z",
-  "shop": 12
-}
-```
-
-</details>
-
-Si la información proporcionada tiene errores, devuelve código de error (`400`) y un objeto de errores. En cada entrada
-del objeto de errores, la llave corresponde al nombre del campo que tiene el error y el valor corresponde a una lista de
-los errores asociados a ese campo.
-
-<details>
-<summary>Ejemplo en que faltan campos requeridos</summary>
-
-```json
-{
-  "address_city": [
-    "This field is required."
-  ],
-  "reference_code": [
-    "This field is required."
-  ]
-}
-```
-
-</details>
-
-<details>
-<summary>Ejemplo en que no se entrega una comuna válida</summary>
-
-```json
-{
-  "address_city": [
-    "\"Chicureo\" is not a valid city"
-  ]
-}
-```
-
-</details>
-
-<details>
-<summary>Ejemplo en que no se entrega una región válida (deben usarse los códigos de región)</summary>
-
-```json
-{
-  "address_region": [
-    "\"Metropolitana\" is not a valid choice."
-  ]
-}
-```
-
-</details>
-
-<details>
-<summary>Ejemplo en que la comuna no está dentro de la región</summary>
-
-```json
-{
-  "non_field_errors": [
-    "Viña Del Mar do not belong to Metropolitana de Santiago region"
-  ]
-}
-```
-
-</details>
-
-## Obtener envío
-
-Devuelve la información de un envío asociado a una tienda.
-
-#### Endpoint
-
-`GET /api/shops/:shop_id/orders/:order_id/`
-
-#### Parámetros
-
-No recibe.
-
-#### Status codes
-
-- `200`: retorna el envío.
-- `401`: el token de autenticación no es válido.
-- `403`: el token de autenticación no tiene permisos para consultar este recurso.
-- `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso, o no
-  existe el envío con el `:order_id` entregado.
-
-#### Respuestas
-
-En el caso de una respuesta positiva (`200`) retorna el envío. Ver recurso [Order](#order) para conocer todos los
-atributos.
-
-<details>
-<summary>Ejemplo respuesta exitosa</summary>
-
-```json
-{
-  "additional_data": "prueba",
-  "address_additional": "8320000",
-  "address_city": "302",
-  "address_city_name": "Curacaví",
-  "address_flat": "603",
-  "address_region": "RM",
-  "address_region_name": "Metropolitana de Santiago",
-  "address_street": "5413 Avenida Presidente Kennedy",
-  "courier": "tpc",
-  "courier_name": "ThePackCo",
-  "created_at": "2022-05-02T13:46:07.129425Z",
-  "customer_email": "portilloronny6@gmail.com",
-  "customer_name": "Ronny Portillo",
-  "customer_phone": "56990858568",
-  "events": [
-    {
-      "additional_data": {},
-      "datetime": "2022-05-02T13:46:07.129425Z",
-      "description": "Envío creado",
-      "name": "created"
-    }
-  ],
-  "id": 47,
-  "is_pickup": false,
-  "packages": 1,
-  "product_description": "1x iPhone 13",
-  "products": [
-    {
-      "ean": "6894232142032",
-      "grams": 0,
-      "name": "iPhone 13",
-      "quantity": 1,
-      "sku": "5246234",
-      "variant": "2346234"
-    }
-  ],
-  "public_id": "XYXW4C553N",
-  "reference_code": "1006",
-  "shop": 1,
-  "status": "created",
-  "status_name": "Creado",
-  "updated_at": "2022-05-02T13:46:07.301396Z"
-}
-```
-
-</details>
-
 ____
+
 
 ## Shop
 
 Objeto que representa una tienda a la cual están asociados los envíos.
 
-Las tiendas no pueden crearse ni modificarse desde la API.
+Las tiendas no pueden crearse desde la API, deben ser creadas directamente por un administrador de ThePackCo.
 
-| Atributo | Tipo      |Ejemplo| Descripción                                                                                       |
-|----------|-----------|-------|---------------------------------------------------------------------------------------------------|
-| `id`     | `integer` |12| ID asociado a la tienda. Es necesario para poder crear envíos                                     |
-| `name`   | `string`  |Zapatería Chilena| Nombre de la tienda que se muestra en la plataforma de clientes                                   |
-| `settings` | `json`  |{...}| Json que contiene la información de la configuración de la tienda en The Pack Co. Por ejemplo, Si un usuario desea recibir notificaciones cuando una orden allá cambiado de status, dicha información aparecerá en este campo.   |
-| `webhook_token` | `string`  |1T15TTGV4T2vDNd6VMXZ548EZfIexrZ8| Token utilizado para autenticar a la tienda que desea recibir los cambios en los status de sus ordenes.   |
-| `mail_preferences_data` | `json`  |{...}| Configuración de mensajería del usuario.   |
+Al editar una tienda, solo es posible modificar aquellos atributos con el símbolo :question:, los que tienen 
+el símbolo :book: son atributos de solo lectura.
 
-####  Webhooks
+|Atributo|Tipo|Ejemplo|Descripción|
+|--------|----|-------|-----------|
+|`id`|:book: - `integer`|12|ID asociado a la tienda|
+|`name`|:book: - `string`|Zapatería Chilena|Nombre de la tienda que se muestra en la plataforma de clientes|
+|`settings`|:question: - `json`|{...}|Configuración de la tienda. [Detalles](#shop-settings)|
+|`webhook_token`|:book: - `string`|1T15TTGV4T2vDNd6VMXZ548EZfIexrZ9|Si estás usando los webhooks de la tienda, este token permite verificar que las _requests_ que recibas vienen realmente de ThePackCo|
+|`mail_preferences_data`|:question: - `json`|{...}|Configuración de envío de correos. [Detalles](#shop-emails)|
 
-Los webhooks no son más que urls que permiten que los servicios externos sean notificados cuando ocurren ciertos
-eventos.
+####  Shop settings
 
-Por ejemplo, el dueño de la tienda podrá configurar un webhook para ser notificado cuando ocurran cambios en el status
-de sus órdenes.
+En el atributo `settings` podemos configurar los webhooks.
 
-Para que las notificaciones mediante webhook surtan efecto, es importante que la tienda remota tenga configurado en su
-sistema aquellas settings que requieran de webhook.
+Los webhooks permiten que servicios externos (manejados por la propia tienda) sean notificados cuando ocurren ciertos
+eventos. Por ejemplo, el dueño de la tienda podrá configurar un webhook para ser notificado cuando ocurran cambios en el estado
+de sus envíos.
 
-<summary>Ejemplo de los settings de la tienda al tener webhook configurado</summary>
+Cada webhook entrega distinta información y se llama en distintas circunstancias. A continuación el listado de webhooks disponibles:
+
+|Nombre|Verbo HTTP|Cuerpo HTTP|Se llama cuando|
+|------|----------|-----------|---------------|
+|`order_updated`|POST|En formato JSON, el [envío](#order) con todos sus atributos|Cada vez que hay un nuevo [evento](#orderevent) asociado a un envío, esto incluye el evento _created_|
+
+En cada llamada de estos webhooks se envía también el header `HTTP_WEBHOOK_TOKEN` con el token de la tienda, esto 
+debería usarse para validar que la _requests_ vienen realmente de ThePackCo y no de un usuario malicioso.
+
+Para cada webhook, el usuario puede definir si está activo o inactivo, y de estar activo se debe definir una URL a la cual llamar.
+
+<details>
+<summary>Ejemplo con webhook activo</summary>
 
 ```json
 {
-  "webhooks": {
-    "order_updated": {
-      "enabled": true,
-      "endpoint": "https://platform.thepackco.cl/webhooks/order_update/shopify/"
+  "settings": {
+    "webhooks": {
+      "order_updated": {
+         "enabled": true,
+         "endpoint": "http://yourdomain.com/tpc-webhooks/order_updated"
+      }
     }
   }
 }
 ```
 
-En el ejemplo anterior vemos como el dueño de la tienda tiene activado (enabled: True) el webhook de actualización de
-órdenes (order_updated), para que ThePackCo use esté endpoint para notificarle cuando una orden haya sido actualizada.
+</details>
 
-Por otro lado, el usuario podrá configurar sus propios urls para sus propios sistemas externos de notificación, o bien
-ThePackCo podrá proporcionar su propio endpoint para enviar los cambios a su tienda remota. En el ejemplo anterior la
-tienda remota es shopify.
+<details>
+<summary>Ejemplo con webhook inactivo</summary>
 
+```json
+{
+  "settings": {
+    "webhooks": {
+      "order_updated": {
+         "enabled": false
+      }
+    }
+  }
+}
+```
+
+</details>
+
+####  Shop emails
+
+En el atributo `mail_preferences_data` podemos definir cuándo el usuario final (campo `customer_email` del envío) recibirá notificaciones por correo. A continuación está el listado de correos que se pueden configurar:
+
+|Nombre notificación|Tipo de dato|Descripción|
+|-------------------|------------|-----------|
+|`send_at_created`|`boolean`|Enviar un correo cuando el envío es creado|
+|`send_at_received`|`boolean`|Enviar un correo cuando el envío es retirado de la tienda|
+|`send_at_dispatched`|`boolean`|Enviar un correo cuando el envío está en ruta para ser entregado|
+|`send_at_delivered`|`boolean`|Enviar un correo cuando el envío es entregado|
+|`send_at_delayed`|`boolean`|Enviar un correo cuando el envío que salió a ruta se atrasa y por lo tanto se entregará al día siguiente|
+|`send_at_delegated`|`boolean`|Enviar un correo cuando el envío se delega a otra empresa de courier. El correo incluye el nombre del otro courier junto con un número de seguimiento|
+
+<details>
+<summary>Ejemplo donde se envían todos los correos</summary>
+
+```json
+{
+  "mail_preferences_data": {
+    "send_at_created": true,
+    "send_at_received": true,
+    "send_at_dispatched": true,
+    "send_at_delivered": true,
+    "send_at_delayed": true,
+    "send_at_delegated": true
+  }
+}
+```
+
+</details>
 
 
 ## Order
@@ -3372,33 +3413,33 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 opcionalmente los con el símbolo :question:. Por otra parte, los atributos que tienen el símbolo :book: son atributos de
 solo lectura y por lo tanto solo pueden ser leídos al obtener la información de un envío.
 
-| Atributo              | Tipo                     | Ejemplo                                                    | Descripción                                                                                                                            |
-|-----------------------|--------------------------|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                  | :book: - `integer`       | 133                                                        | ID asociado al envío                                                                                                                   |
-| `shop`                | :book: - `integer`       | 12                                                         | ID asociado a la tienda                                                                                                                |
-| `public_id`           | :book: - `string`        | ND7AN34H9K                                                 | ID público de seguimiento del envío compuesto de 10 caracteres (letras mayúsculas y números)                                           |
-| `status`              | :book: - `string`        | created                                                    | Código del estado del envío. [Detalles](#estados)                                                                                      |
-| `status_name`         | :book: - `string`        | Creado                                                     | Nombre descriptivo del estado del envío                                                                                                |
-| `courier`             | :book: - `string`        | tpc                                                        | Código del courier a cargo del envío                                                                                                   |
-| `courier_name`        | :book: - `string`        | ThePackCo                                                  | Nombre descriptivo de courier a cargo del envío                                                                                        |
-| `is_pickup`           | :book: - `boolean`       | false                                                      | Retiro en tienda                                                                                                                       |
-| `reference_code`      | :exclamation: - `string` | 2310TIENDA                                                 | Código de referencia del envío                                                                                                         |
-| `address_region`      | :exclamation: - `string` | VS                                                         | Código de la región de destino. [Detalles](#regiones-y-comunas)                                                                        |
-| `address_region_name` | :book: - `string`        | Valparaíso                                                 | Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)                                                            |
-| `address_city`        | :exclamation: - `string` | 81                                                         | Código interno de la comuna de destino. [Detalles](#regiones-y-comunas)                                                                |
-| `address_city_name`   | :book: - `string`        | Viña Del Mar                                               | Nombre descriptivo de la comuna de destino. [Detalles](#regiones-y-comunas)                                                            |
-| `address_street`      | :exclamation: - `string` | Compañía de Jesús 1131                                     | Dirección de destino, con calle y número                                                                                               |
-| `address_flat`        | :question: - `string`    | Depto 301A                                                 | Número de departamento o casa (si fuera dentro de un condominio)                                                                       |
-| `address_additional`  | :question: - `string`    | Portón de madera frente a camino de tierra                 | Referencias adicionales para la dirección de destino en caso de que fueran necesarias                                                  |
-| `customer_email`      | :question: - `string`    | juan@thepackco.cl                                          | Correo del cliente que va a recibir el producto. Este correo se utiliza para envíar correos con información de seguimiento             |
-| `customer_name`       | :question: - `string`    | Juan Nieves                                                | Nombre del cliente que va a recibir el producto                                                                                        |
-| `customer_phone`      | :question: - `string`    | 56944443333                                                | Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete |
-| `product_description` | :question: - `string`    | Botines negros talla XS                                    | Descripción del producto                                                                                                               |
-| `packages`            | :question: - `integer`   | 4                                                          | Cantidad de bultos del producto                                                                                                        |
-| `additional_data`     | :question: - `string`    | Compra realizada a través de instagram usuario juan.nieves | Información adicional al envío que pudiera querer guardar la tienda                                                                    |
-| `events`              | :book: - `OrderEvent`    | [{...}, {...}, ...]                                        | Lista de eventos asociados al envío                                                                                                    |
-| `created_at`          | :book: - `string`        | 2020-11-27T22:42:32.586057Z                                | Hora de creación del envío, en formato ISO8601 (`Z` = GMT)                                                                             |
-| `updated_at`          | :book: - `string`        | 2020-11-27T22:42:32.586057Z                                | Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)                                                                 |
+|Atributo|Tipo|Ejemplo|Descripción|
+|--------|----|-------|-----------|
+|`id`|:book: - `integer`|133|ID asociado al envío|
+|`shop`|:book: - `integer`|12|ID asociado a la tienda|
+|`public_id`|:book: - `string`|ND7AN34H9K|ID público de seguimiento del envío compuesto de 10 caracteres (letras mayúsculas y números)|
+|`status`|:book: - `string`|created|Código del estado del envío. [Detalles](#estados)|
+|`status_name`|:book: - `string`|Creado|Nombre descriptivo del estado del envío|
+|`courier`|:book: - `string`|tpc|Código del courier a cargo del envío|
+|`courier_name`|:book: - `string`|ThePackCo|Nombre descriptivo de courier a cargo del envío|
+|`reference_code`|:exclamation: - `string`|2310TIENDA|Código de referencia del envío|
+|`address_region`|:exclamation: - `string`|VS|Código de la región de destino. [Detalles](#regiones-y-comunas)|
+|`address_region_name`|:book: - `string`|Valparaíso|Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)|
+|`address_city`|:exclamation: - `string`|81|Código interno de la comuna de destino. [Detalles](#regiones-y-comunas)|
+|`address_city_name`|:book: - `string`|Viña Del Mar|Nombre descriptivo de la comuna de destino. [Detalles](#regiones-y-comunas)|
+|`address_street`|:exclamation: - `string`|Compañía de Jesús 1131|Dirección de destino, con calle y número|
+|`address_flat`|:question: - `string`|Depto 301A|Número de departamento o casa (si fuera dentro de un condominio)|
+|`address_additional`|:question: - `string`|Portón de madera frente a camino de tierra|Referencias adicionales para la dirección de destino en caso de que fueran necesarias|
+|`customer_email`|:question: - `string`|juan@thepackco.cl|Correo del cliente que va a recibir el producto. Este correo se utiliza para envíar correos con información de seguimiento|
+|`customer_name`|:question: - `string`|Juan Nieves|Nombre del cliente que va a recibir el producto|
+|`customer_phone`|:question: - `string`|56944443333|Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete|
+|`product_description`|:question: - `string`|Botines negros talla XS|Descripción del producto|
+|`products`|:question: - `Product[]`|[{...}, {...}, ...]|Lista de [productos](#product) asociados al envío|
+|`packages`|:question: - `integer`|4|Cantidad de bultos del producto|
+|`additional_data`|:question: - `string`|Compra realizada a través de instagram usuario juan.nieves|Información adicional al envío que pudiera querer guardar la tienda|
+|`events`|:book: - `OrderEvent[]`|[{...}, {...}, ...]|Lista de [eventos](#orderevent) asociados al envío|
+|`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
+|`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
 
 #### Estados
 
@@ -3458,3 +3499,18 @@ Los OrderEvent no pueden crearse ni modificarse por medio de la API.
 |`description`|`string`|Envío creado|Nombre descriptivo del evento|
 |`datetime`|`string`|2020-11-27T22:42:32.586057Z|Hora en que ocurrió el evento, en formato ISO8601 (`Z` = GMT)|
 |`additional_data`|`JSON`|`{"eta": "14:13"}`|Información adicional del evento. Los atributos presentes en este objeto van a depender del tipo de evento|
+
+## Product
+
+Objeto que representa un producto asociado a un envío.
+
+Los productos no pueden crearse ni modificarse por medio de la API.
+
+|Atributo|Tipo|Ejemplo|Descripción|
+|--------|----|-------|-----------|
+|`name`|`string`|Zapatilla Chester|Nombre del producto|
+|`variant`|`string`|Negro / 38|Variante del producto|
+|`sku`|`string`|2251000072038|Código SKU asociado al producto|
+|`ean`|`string`|6563727900783|Código EAN-13 asociado al producto|
+|`quanity`|`integer`|1|Cantidad|
+|`grams`|`integer`|900|Peso unitario del producto|
