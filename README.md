@@ -3266,44 +3266,48 @@ atributos.
 
 ```json
 {
-  "id": 119,
+  "additional_data": "prueba",
+  "address_additional": "8320000",
+  "address_city": "302",
+  "address_city_name": "Curacaví",
+  "address_flat": "603",
+  "address_region": "RM",
+  "address_region_name": "Metropolitana de Santiago",
+  "address_street": "5413 Avenida Presidente Kennedy",
+  "courier": "tpc",
+  "courier_name": "ThePackCo",
+  "created_at": "2022-05-02T13:46:07.129425Z",
+  "customer_email": "portilloronny6@gmail.com",
+  "customer_name": "Ronny Portillo",
+  "customer_phone": "56990858568",
   "events": [
     {
-      "datetime": "2020-11-13T03:44:51.220196Z",
-      "name": "received",
-      "additional_data": {
-        "triggered_by": "leonardo"
-      },
-      "description": "Envío retirado por The Pack Co"
-    },
-    {
-      "datetime": "2020-10-29T22:02:14.938584Z",
-      "name": "created",
       "additional_data": {},
-      "description": "Envío creado"
+      "datetime": "2022-05-02T13:46:07.129425Z",
+      "description": "Envío creado",
+      "name": "created"
     }
   ],
-  "address_city": "330",
-  "courier": "tpc",
-  "address_region_name": "Metropolitana de Santiago",
-  "address_city_name": "Providencia",
-  "courier_name": "ThePackCo",
-  "status_name": "Retirado",
-  "public_id": "YY4NYG9C51",
-  "status": "received",
-  "reference_code": "109231203",
-  "product_description": "2x zapatos sport t41",
-  "additional_data": "",
-  "address_region": "RM",
-  "address_street": "Los Leones 9000",
-  "address_flat": "Depto 101",
-  "address_additional": "",
-  "customer_email": "diego@nieves.cl",
-  "customer_name": "Diego Nieves",
-  "customer_phone": "+56971234567",
-  "created_at": "2020-10-29T22:02:14.938584Z",
-  "updated_at": "2020-11-13T03:44:51.271263Z",
-  "shop": 12
+  "id": 47,
+  "is_pickup": false,
+  "packages": 1,
+  "product_description": "1x iPhone 13",
+  "products": [
+    {
+      "ean": "6894232142032",
+      "grams": 0,
+      "name": "iPhone 13",
+      "quantity": 1,
+      "sku": "5246234",
+      "variant": "2346234"
+    }
+  ],
+  "public_id": "XYXW4C553N",
+  "reference_code": "1006",
+  "shop": 1,
+  "status": "created",
+  "status_name": "Creado",
+  "updated_at": "2022-05-02T13:46:07.301396Z"
 }
 ```
 
@@ -3350,10 +3354,10 @@ sistema aquellas settings que requieran de webhook.
 ```
 
 En el ejemplo anterior vemos como el dueño de la tienda tiene activado (enabled: True) el webhook de actualización de
-órdenes (order_updated), para que The Pack Co use esté endpoint para notificarle cuando una orden haya sido actualizada.
+órdenes (order_updated), para que ThePackCo use esté endpoint para notificarle cuando una orden haya sido actualizada.
 
 Por otro lado, el usuario podrá configurar sus propios urls para sus propios sistemas externos de notificación, o bien
-The Pack Co podrá proporcionar su propio endpoint para enviar los cambios a su tienda remota. En el ejemplo anterior la
+ThePackCo podrá proporcionar su propio endpoint para enviar los cambios a su tienda remota. En el ejemplo anterior la
 tienda remota es shopify.
 
 
@@ -3368,32 +3372,33 @@ Al crear un envío, deben entregarse obligatoriamente los atributos marcados con
 opcionalmente los con el símbolo :question:. Por otra parte, los atributos que tienen el símbolo :book: son atributos de
 solo lectura y por lo tanto solo pueden ser leídos al obtener la información de un envío.
 
-|Atributo|Tipo|Ejemplo|Descripción|
-|--------|----|-------|-----------|
-|`id`|:book: - `integer`|133|ID asociado al envío|
-|`shop`|:book: - `integer`|12|ID asociado a la tienda|
-|`public_id`|:book: - `string`|ND7AN34H9K|ID público de seguimiento del envío compuesto de 10 caracteres (letras mayúsculas y números)|
-|`status`|:book: - `string`|created|Código del estado del envío. [Detalles](#estados)|
-|`status_name`|:book: - `string`|Creado|Nombre descriptivo del estado del envío|
-|`courier`|:book: - `string`|tpc|Código del courier a cargo del envío|
-|`courier_name`|:book: - `string`|ThePackCo|Nombre descriptivo de courier a cargo del envío|
-|`reference_code`|:exclamation: - `string`|2310TIENDA|Código de referencia del envío|
-|`address_region`|:exclamation: - `string`|VS|Código de la región de destino. [Detalles](#regiones-y-comunas)|
-|`address_region_name`|:book: - `string`|Valparaíso|Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)|
-|`address_city`|:exclamation: - `string`|81|Código interno de la comuna de destino. [Detalles](#regiones-y-comunas)|
-|`address_city_name`|:book: - `string`|Viña Del Mar|Nombre descriptivo de la comuna de destino. [Detalles](#regiones-y-comunas)|
-|`address_street`|:exclamation: - `string`|Compañía de Jesús 1131|Dirección de destino, con calle y número|
-|`address_flat`|:question: - `string`|Depto 301A|Número de departamento o casa (si fuera dentro de un condominio)|
-|`address_additional`|:question: - `string`|Portón de madera frente a camino de tierra|Referencias adicionales para la dirección de destino en caso de que fueran necesarias|
-|`customer_email`|:question: - `string`|juan@thepackco.cl|Correo del cliente que va a recibir el producto. Este correo se utiliza para envíar correos con información de seguimiento|
-|`customer_name`|:question: - `string`|Juan Nieves|Nombre del cliente que va a recibir el producto|
-|`customer_phone`|:question: - `string`|56944443333|Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete|
-|`product_description`|:question: - `string`|Botines negros talla XS|Descripción del producto|
-|`packages`|:question: - `integer`|4|Cantidad de bultos del producto|
-|`additional_data`|:question: - `string`|Compra realizada a través de instagram usuario juan.nieves|Información adicional al envío que pudiera querer guardar la tienda|
-|`events`|:book: - `OrderEvent`|[{...}, {...}, ...]|Lista de eventos asociados al envío|
-|`created_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de creación del envío, en formato ISO8601 (`Z` = GMT)|
-|`updated_at`|:book: - `string`|2020-11-27T22:42:32.586057Z|Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)|
+| Atributo              | Tipo                     | Ejemplo                                                    | Descripción                                                                                                                            |
+|-----------------------|--------------------------|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                  | :book: - `integer`       | 133                                                        | ID asociado al envío                                                                                                                   |
+| `shop`                | :book: - `integer`       | 12                                                         | ID asociado a la tienda                                                                                                                |
+| `public_id`           | :book: - `string`        | ND7AN34H9K                                                 | ID público de seguimiento del envío compuesto de 10 caracteres (letras mayúsculas y números)                                           |
+| `status`              | :book: - `string`        | created                                                    | Código del estado del envío. [Detalles](#estados)                                                                                      |
+| `status_name`         | :book: - `string`        | Creado                                                     | Nombre descriptivo del estado del envío                                                                                                |
+| `courier`             | :book: - `string`        | tpc                                                        | Código del courier a cargo del envío                                                                                                   |
+| `courier_name`        | :book: - `string`        | ThePackCo                                                  | Nombre descriptivo de courier a cargo del envío                                                                                        |
+| `is_pickup`           | :book: - `boolean`       | false                                                      | Retiro en tienda                                                                                                                       |
+| `reference_code`      | :exclamation: - `string` | 2310TIENDA                                                 | Código de referencia del envío                                                                                                         |
+| `address_region`      | :exclamation: - `string` | VS                                                         | Código de la región de destino. [Detalles](#regiones-y-comunas)                                                                        |
+| `address_region_name` | :book: - `string`        | Valparaíso                                                 | Nombre descriptivo de la región de destino. [Detalles](#regiones-y-comunas)                                                            |
+| `address_city`        | :exclamation: - `string` | 81                                                         | Código interno de la comuna de destino. [Detalles](#regiones-y-comunas)                                                                |
+| `address_city_name`   | :book: - `string`        | Viña Del Mar                                               | Nombre descriptivo de la comuna de destino. [Detalles](#regiones-y-comunas)                                                            |
+| `address_street`      | :exclamation: - `string` | Compañía de Jesús 1131                                     | Dirección de destino, con calle y número                                                                                               |
+| `address_flat`        | :question: - `string`    | Depto 301A                                                 | Número de departamento o casa (si fuera dentro de un condominio)                                                                       |
+| `address_additional`  | :question: - `string`    | Portón de madera frente a camino de tierra                 | Referencias adicionales para la dirección de destino en caso de que fueran necesarias                                                  |
+| `customer_email`      | :question: - `string`    | juan@thepackco.cl                                          | Correo del cliente que va a recibir el producto. Este correo se utiliza para envíar correos con información de seguimiento             |
+| `customer_name`       | :question: - `string`    | Juan Nieves                                                | Nombre del cliente que va a recibir el producto                                                                                        |
+| `customer_phone`      | :question: - `string`    | 56944443333                                                | Teléfono del cliente que va a recibir el producto. Se utiliza para contactar al cliente si hay una dificultar para entregar el paquete |
+| `product_description` | :question: - `string`    | Botines negros talla XS                                    | Descripción del producto                                                                                                               |
+| `packages`            | :question: - `integer`   | 4                                                          | Cantidad de bultos del producto                                                                                                        |
+| `additional_data`     | :question: - `string`    | Compra realizada a través de instagram usuario juan.nieves | Información adicional al envío que pudiera querer guardar la tienda                                                                    |
+| `events`              | :book: - `OrderEvent`    | [{...}, {...}, ...]                                        | Lista de eventos asociados al envío                                                                                                    |
+| `created_at`          | :book: - `string`        | 2020-11-27T22:42:32.586057Z                                | Hora de creación del envío, en formato ISO8601 (`Z` = GMT)                                                                             |
+| `updated_at`          | :book: - `string`        | 2020-11-27T22:42:32.586057Z                                | Hora de última actualización del envío, en formato ISO8601 (`Z` = GMT)                                                                 |
 
 #### Estados
 
