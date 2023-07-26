@@ -43,6 +43,7 @@ if r.status_code == 200:
 - [Crear envío](#crear-envío)
 - [Obtener envío](#obtener-envío)
 - [Obtener tarifas](#obtener-tarifas)
+- [Obtener etiquetas](#obtener-etiquetas)
 
 ## Recursos adicionales
 
@@ -3300,6 +3301,35 @@ En el caso de una respuesta exitosa (`200`) devuelve las tarifas.
 ```
 
 </details>
+
+## Obtener etiquetas
+
+Devuelve un archivo PDF con las etiquetas de los envíos indicados.
+
+#### Endpoint
+
+`POST /api/shops/:shop_id/orders/labels`
+
+#### Parámetros
+
+Recibe un arreglo en el cuerpo de la petición con los IDs o Public IDs de los envíos para los cuales se quieren obtener 
+las etiquetas.
+
+
+<details>
+<summary>Ejemplo</summary>
+
+```json
+  [
+    "3N2WZ5453H", "RNALECXM8I"
+  ]
+```
+
+</details>
+
+#### Respuesta
+
+Devuelve un archivo PDF con las etiquetas de los envíos indicados.
 
 ____
 
