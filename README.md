@@ -123,13 +123,14 @@ Devuelve la información de una tienda y, opcionalmente, los envíos asociados a
 
 Parámetros en URL (query string):
 
-|Nombre|Tipo|Default|Descripción|
-|------|----|-------|-----------|
-|`include_orders`|`true\|false`|`false`|Indica si la respuesta debe incluir los envíos asociados a la tienda. En caso de incluir los envíos, estos contienen solo los atributos más relevantes (ver respuesta de ejemplo para saber qué atributos)|
+| Nombre           | Tipo          | Default | Descripción                                                                                                                                                                                                |
+|------------------|---------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `include_orders` | `true\|false` | `false` | Indica si la respuesta debe incluir los envíos asociados a la tienda. En caso de incluir los envíos, estos contienen solo los atributos más relevantes (ver respuesta de ejemplo para saber qué atributos) |
+| `page`           | `integer`     | `1`     | Indica la paginación de las envíos. 30 envíos por página.                                                                                                                                                  |
 
 #### Status codes
 
-- `200`: retorna la tienda solicitida.
+- `200`: retorna la tienda solicitada.
 - `401`: el token de autenticación no es válido.
 - `403`: el token de autenticación no tiene permisos para consultar este recurso.
 - `404`: no existe una tienda con el `:shop_id` entregado, o es una tienda a la que el usuario no tiene acceso.
@@ -476,6 +477,8 @@ Devuelve la información de un envío asociado a una tienda.
 #### Endpoint
 
 `GET /api/shops/:shop_id/orders/:order_id/`
+
+`GET /api/shops/order/:public_id/`
 
 #### Parámetros
 
