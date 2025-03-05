@@ -144,8 +144,35 @@ En el caso de una respuesta exitosa (`200`) devuelve la [tienda](#shop).
 
 ```json
 {
-  "id": 12,
-  "name": "Zapatería Chilena"
+    "id": 1,
+    "deleted": null,
+    "deleted_by_cascade": false,
+    "name": "Breaking Bad",
+    "info": {
+        "rut": "wioefoiwej",
+        "manager": "oweijfoiwjef",
+        "billing_mail": "",
+        "company_email": "",
+        "social_reason": "oiefjwoiejf",
+        "company_address": "lwkemflkwmef"
+    },
+    "settings": {},
+    "webhook_token": "0xEG96zILwngMvVKf1zsexqFZH4Xjlxz",
+    "mail_preferences_data": {
+        "send_at_pickup": false,
+        "send_at_created": false,
+        "send_at_delayed": false,
+        "send_at_received": true,
+        "send_at_delegated": true,
+        "send_at_delivered": false,
+        "send_at_dispatched": false
+    },
+    "has_warehouse": true,
+    "cutoff_hour": 12,
+    "term_days": 1,
+    "warehouse": "renca",
+    "master": false,
+    "integrations": 3
 }
 ```
 
